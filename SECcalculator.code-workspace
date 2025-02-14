@@ -5,8 +5,12 @@
 		}
 	],
 	"settings": {
-		"pyqt-integration.pyrcc.cmd": "C:\\00MyDocuments\\07PyProjects\\SECcalculator\\SECenv\\Scripts\\pyside6-rcc.exe",
-		"pyqt-integration.pyuic.cmd": "C:\\00MyDocuments\\07PyProjects\\SECcalculator\\SECenv\\Scripts\\pyside6-uic.exe",
-		"pyqt-integration.qtdesigner.path": "C:\\00MyDocuments\\07PyProjects\\SECcalculator\\SECenv\\Lib\\site-packages\\PySide6\\designer.exe"
+		"pyqt-integration.pyrcc.cmd": "C:\\workspace\\07PyProject\\SECcalculator\\.venv\\Scripts\\pyside6-rcc.exe",
+		"pyqt-integration.pyuic.cmd": "C:\\workspace\\07PyProject\\SECcalculator\\.venv\\Scripts\\pyside6-uic.exe",
+		"pyqt-integration.qtdesigner.path": "C:\\workspace\\07PyProject\\SECcalculator\\.venv\\Lib\\site-packages\\PySide6\\designer.exe"
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": []
 	}
 }

@@ -15,52 +15,86 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QAbstractItemView, QApplication, QLabel, QListView,
-    QListWidget, QListWidgetItem, QPushButton, QSizePolicy,
-    QWidget)
+from PySide6.QtWidgets import (QAbstractItemView, QApplication, QGridLayout, QHBoxLayout,
+    QLabel, QListView, QListWidget, QListWidgetItem,
+    QPushButton, QSizePolicy, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(552, 257)
+        Form.resize(848, 215)
+        self.gridLayout = QGridLayout(Form)
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.label_target = QLabel(Form)
+        self.label_target.setObjectName(u"label_target")
+
+        self.horizontalLayout.addWidget(self.label_target)
+
         self.listWidget_target = QListWidget(Form)
         QListWidgetItem(self.listWidget_target)
         QListWidgetItem(self.listWidget_target)
         self.listWidget_target.setObjectName(u"listWidget_target")
-        self.listWidget_target.setGeometry(QRect(90, 30, 451, 41))
         self.listWidget_target.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectItems)
         self.listWidget_target.setLayoutMode(QListView.LayoutMode.SinglePass)
         self.listWidget_target.setViewMode(QListView.ViewMode.IconMode)
+
+        self.horizontalLayout.addWidget(self.listWidget_target)
+
+
+        self.gridLayout.addLayout(self.horizontalLayout, 1, 0, 1, 3)
+
+        self.pushButton_setting = QPushButton(Form)
+        self.pushButton_setting.setObjectName(u"pushButton_setting")
+
+        self.gridLayout.addWidget(self.pushButton_setting, 0, 2, 1, 1)
+
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.label_fieldvalue = QLabel(Form)
+        self.label_fieldvalue.setObjectName(u"label_fieldvalue")
+
+        self.horizontalLayout_2.addWidget(self.label_fieldvalue)
+
         self.listWidget_fieldvalue = QListWidget(Form)
         QListWidgetItem(self.listWidget_fieldvalue)
         QListWidgetItem(self.listWidget_fieldvalue)
         self.listWidget_fieldvalue.setObjectName(u"listWidget_fieldvalue")
-        self.listWidget_fieldvalue.setGeometry(QRect(90, 70, 451, 41))
         self.listWidget_fieldvalue.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectItems)
         self.listWidget_fieldvalue.setLayoutMode(QListView.LayoutMode.SinglePass)
         self.listWidget_fieldvalue.setViewMode(QListView.ViewMode.IconMode)
-        self.pushButton_setting = QPushButton(Form)
-        self.pushButton_setting.setObjectName(u"pushButton_setting")
-        self.pushButton_setting.setGeometry(QRect(460, 0, 82, 28))
-        self.label_target = QLabel(Form)
-        self.label_target.setObjectName(u"label_target")
-        self.label_target.setGeometry(QRect(20, 30, 62, 20))
-        self.label_fieldvalue = QLabel(Form)
-        self.label_fieldvalue.setObjectName(u"label_fieldvalue")
-        self.label_fieldvalue.setGeometry(QRect(20, 80, 62, 20))
-        self.label_xyz = QLabel(Form)
-        self.label_xyz.setObjectName(u"label_xyz")
-        self.label_xyz.setGeometry(QRect(150, 130, 62, 20))
+
+        self.horizontalLayout_2.addWidget(self.listWidget_fieldvalue)
+
+
+        self.gridLayout.addLayout(self.horizontalLayout_2, 2, 0, 1, 3)
+
         self.label_fution = QLabel(Form)
         self.label_fution.setObjectName(u"label_fution")
-        self.label_fution.setGeometry(QRect(360, 130, 62, 20))
-        self.label_xyz_var = QLabel(Form)
-        self.label_xyz_var.setObjectName(u"label_xyz_var")
-        self.label_xyz_var.setGeometry(QRect(130, 170, 62, 20))
+
+        self.gridLayout.addWidget(self.label_fution, 3, 2, 1, 1)
+
         self.label_fution_var = QLabel(Form)
         self.label_fution_var.setObjectName(u"label_fution_var")
-        self.label_fution_var.setGeometry(QRect(350, 170, 71, 20))
+
+        self.gridLayout.addWidget(self.label_fution_var, 5, 2, 1, 1)
+
+        self.label_xyz = QLabel(Form)
+        self.label_xyz.setObjectName(u"label_xyz")
+
+        self.gridLayout.addWidget(self.label_xyz, 3, 1, 1, 1)
+
+        self.label_xyz_var = QLabel(Form)
+        self.label_xyz_var.setObjectName(u"label_xyz_var")
+
+        self.gridLayout.addWidget(self.label_xyz_var, 5, 1, 1, 1)
+
+#if QT_CONFIG(shortcut)
+        self.label_target.setBuddy(self.listWidget_target)
+        self.label_fieldvalue.setBuddy(self.listWidget_fieldvalue)
+#endif // QT_CONFIG(shortcut)
 
         self.retranslateUi(Form)
 
@@ -69,6 +103,7 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"SECcalculator", None))
+        self.label_target.setText(QCoreApplication.translate("Form", u"\u76ee\u6807\u503c\uff1a", None))
 
         __sortingEnabled = self.listWidget_target.isSortingEnabled()
         self.listWidget_target.setSortingEnabled(False)
@@ -78,6 +113,8 @@ class Ui_Form(object):
         ___qlistwidgetitem1.setText(QCoreApplication.translate("Form", u"2", None));
         self.listWidget_target.setSortingEnabled(__sortingEnabled)
 
+        self.pushButton_setting.setText(QCoreApplication.translate("Form", u"\u8bbe\u7f6e", None))
+        self.label_fieldvalue.setText(QCoreApplication.translate("Form", u"\u573a\u503c\uff1a", None))
 
         __sortingEnabled1 = self.listWidget_fieldvalue.isSortingEnabled()
         self.listWidget_fieldvalue.setSortingEnabled(False)
@@ -87,12 +124,9 @@ class Ui_Form(object):
         ___qlistwidgetitem3.setText(QCoreApplication.translate("Form", u"2", None));
         self.listWidget_fieldvalue.setSortingEnabled(__sortingEnabled1)
 
-        self.pushButton_setting.setText(QCoreApplication.translate("Form", u"\u8bbe\u7f6e", None))
-        self.label_target.setText(QCoreApplication.translate("Form", u"\u76ee\u6807\u503c\uff1a", None))
-        self.label_fieldvalue.setText(QCoreApplication.translate("Form", u"\u573a\u503c\uff1a", None))
-        self.label_xyz.setText(QCoreApplication.translate("Form", u"XYZ", None))
         self.label_fution.setText(QCoreApplication.translate("Form", u"\u878d\u5408", None))
-        self.label_xyz_var.setText(QCoreApplication.translate("Form", u"Var_xyz", None))
         self.label_fution_var.setText(QCoreApplication.translate("Form", u"Var_fution", None))
+        self.label_xyz.setText(QCoreApplication.translate("Form", u"XYZ", None))
+        self.label_xyz_var.setText(QCoreApplication.translate("Form", u"Var_xyz", None))
     # retranslateUi
 
