@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"pyqt-integration.pyrcc.cmd": "C:\\00MyDocuments\\07PyProjects\\SECcalculator\\SECenv\\Scripts\\pyside6-rcc.exe",
+		"pyqt-integration.pyuic.cmd": "C:\\00MyDocuments\\07PyProjects\\SECcalculator\\SECenv\\Scripts\\pyside6-uic.exe",
+		"pyqt-integration.qtdesigner.path": "C:\\00MyDocuments\\07PyProjects\\SECcalculator\\SECenv\\Lib\\site-packages\\PySide6\\designer.exe"
+	}
+}
