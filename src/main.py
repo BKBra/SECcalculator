@@ -12,7 +12,7 @@ Copyright (c) 2025 by ${git_name_email}, All Rights Reserved.
 # pip freeze > requirements.txt
 # pip install -r requirements.txt
 
-from PySide6 import QtWidgets, QtGui
+from PySide6 import QtWidgets, QtGui, QtCore
 from src.ui.Ui_SECcalculator import Ui_Form
 from src.ui.Ui_setting import Ui_window_setting as Ui_setting
 from json import load, dump
@@ -42,23 +42,6 @@ list_default: list[list[int]] = [
 ]
 
 
-def generate_random_deck():
-    return [[random.randint(1, 2), random.randint(0, 12)] for _ in range(15)]
-
-
-list_default2 = generate_random_deck()
-
-dict_Decks = {
-    'default_deck1': list_default,
-    'default_deck2': list_default2,
-}
-with open('Decks.json', 'w') as f:
-    dump(dict_Decks, f)
-
-with open('Decks.json', 'r') as f:
-    dict_Decks = load(f)
-
-
 class SECcalculator(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super(SECcalculator, self).__init__()
@@ -71,18 +54,21 @@ class SECcalculator(QtWidgets.QWidget, Ui_Form):
         self.setting.comboBox.currentIndexChanged.connect(self.display_setting)
         self.setting.pushButton_yes.clicked.connect(self.save_setting)
         self.setting.pushButton_no.clicked.connect(self.setting_window.close)
+        self.setting.pushButton_add.clicked.connect(self.add_setting)
+        self.setting.pushButton_delete.clicked.connect(self.delete_setting)
         self.connect_spinBox()
         self.listitem_selected()
+        self.set_res_font()
 
         self.decks: dict[str, list[list[int]]] = {}
 
+        self.create_setting_file()
         self.load_setting()
         self.set_listwidget()
 
     def set_listwidget(self):
         self.listWidget_target.clear()
         self.listWidget_fieldvalue.clear()
-        nice_green = QtGui.QColor(34, 139, 34)  # 深墨绿色 for dark mode
 
         for i in range(1, 12):
             item = QtWidgets.QListWidgetItem(f'{i + 1}')
@@ -90,7 +76,6 @@ class SECcalculator(QtWidgets.QWidget, Ui_Form):
             font = item.font()
             font.setPointSize(20)  # 设置字体大小为20
             item.setFont(font)
-            item.setBackground(nice_green)
             self.listWidget_target.addItem(item)
             self.listWidget_target.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
 
@@ -119,23 +104,25 @@ class SECcalculator(QtWidgets.QWidget, Ui_Form):
         for index in range(self.listWidget_target.count()):
             item = self.listWidget_target.item(index)
             if item in selected_items:
-                item.setBackground(QtGui.QColor('blue'))
+                item.setBackground(QtGui.QColor(34, 139, 34))
                 solve = self.solve_target(int(item.text()))
                 if solve:
-                    result += [f'目标：{item.text()}', solve]
+                    result.append([f'{item.text()}', solve])
+                else:
+                    result.append([f'{item.text()}', '无解'])
             else:
                 item.setBackground(
                     QtGui.QColor('white') if not self.is_dark_mode() else QtGui.QColor(53, 53, 53)
                 )
 
-        print(result)
+        self.res_show(result)
 
     def field_listitem_selected(self):
         selected_items = self.listWidget_fieldvalue.selectedItems()
         for index in range(self.listWidget_fieldvalue.count()):
             item = self.listWidget_fieldvalue.item(index)
             if item in selected_items:
-                item.setBackground(QtGui.QColor('blue'))
+                item.setBackground(QtGui.QColor('34, 139, 34'))
             else:
                 item.setBackground(
                     QtGui.QColor('white') if not self.is_dark_mode() else QtGui.QColor(53, 53, 53)
@@ -147,6 +134,19 @@ class SECcalculator(QtWidgets.QWidget, Ui_Form):
     def show_settings_window(self):
         self.display_setting()
         self.setting_window.show()
+
+    def is_setting_file_exist(self):
+        try:
+            with open('Decks.json', 'r') as f:
+                return True
+        except Exception as e:
+            return False
+
+    def create_setting_file(self):
+        if not self.is_setting_file_exist():
+            with open('Decks.json', 'w') as f:
+                dump({'default': list_default}, f)
+            return True
 
     def load_setting(self):
         try:
@@ -163,6 +163,16 @@ class SECcalculator(QtWidgets.QWidget, Ui_Form):
             self.quue_cards(deck)
 
     def save_setting(self):
+        current_deck = self.setting.comboBox.currentText()
+        deck = []
+        for i in range(15):
+            if getattr(self.setting, f'radioButton_{i+1}_f').isChecked():
+                deck.append([1, getattr(self.setting, f'spinBox_{i+1}').value()])
+            elif getattr(self.setting, f'radioButton_{i+1}_xyz').isChecked():
+                deck.append([2, getattr(self.setting, f'spinBox_{i+1}').value()])
+            else:
+                deck.append([3, getattr(self.setting, f'spinBox_{i+1}').value()])
+        self.decks[current_deck] = deck
         with open('Decks.json', 'w') as f:
             dump(self.decks, f)
         self.setting_window.close()
@@ -225,13 +235,92 @@ class SECcalculator(QtWidgets.QWidget, Ui_Form):
         fusion = list(set(fusion))
         result = []
         for x in xyz:
+            if x == 0:
+                continue
             for y in fusion:
-                if target == 2 * x + y and (x + y) <= 20:
-                    result.append((x, y, x + y))
+                if y == 0:
+                    continue
+                if target == x + y and (x + y) <= 20:
+                    result.append((x, y, 2 * x + y))
         if len(result) == 0:
             return None
         else:
             return result
+
+    def set_res_font(self):
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        font.setWeight(QtGui.QFont.Bold)
+        self.listWidget_res_target.setFont(font)
+        self.listWidget_res_field.setFont(font)
+        self.listWidget_res_xyz.setFont(font)
+        self.listWidget_res_fusion.setFont(font)
+
+    def res_show(self, res: list[tuple[int, int, int]]):
+        self.listWidget_res_target.clear()
+        self.listWidget_res_field.clear()
+        self.listWidget_res_xyz.clear()
+        self.listWidget_res_fusion.clear()
+        fieldvalues = []
+        for index, r in enumerate(res):
+            if self.is_dark_mode():
+                color = QtGui.QColor('#1f1f1f') if index % 2 == 0 else QtGui.QColor('#181818')
+            else:
+                color = QtGui.QColor('#f0f0f0') if index % 2 == 0 else QtGui.QColor('#e0e0e0')
+            if type(r[1]) == str:
+                self.add_centered_item(self.listWidget_res_target, f'{r[0]}', color)
+                self.add_centered_item(self.listWidget_res_field, f'无解', color)
+                self.add_centered_item(self.listWidget_res_xyz, f'无解', color)
+                self.add_centered_item(self.listWidget_res_fusion, f'无解', color)
+            else:
+                for t in r[1]:
+                    self.add_centered_item(self.listWidget_res_target, f'{r[0]}', color)
+                    self.add_centered_item(self.listWidget_res_field, f'{t[2]}', color)
+                    if t[2] not in fieldvalues:
+                        fieldvalues.append(t[2])
+                    self.add_centered_item(self.listWidget_res_xyz, f'{t[0]}', color)
+                    self.add_centered_item(self.listWidget_res_fusion, f'{t[1]}', color)
+        for i in range(self.listWidget_fieldvalue.count()):
+            if int(self.listWidget_fieldvalue.item(i).text()) in fieldvalues:
+                self.listWidget_fieldvalue.item(i).setBackground(QtGui.QColor('#228b22'))
+            else:
+                self.listWidget_fieldvalue.item(i).setBackground(
+                    QtGui.QColor('white') if not self.is_dark_mode() else QtGui.QColor('#2d2d2d')
+                )
+
+    def add_centered_item(self, list_widget, text, color):
+        item = QtWidgets.QListWidgetItem(text)
+        item.setTextAlignment(QtCore.Qt.AlignCenter)
+        item.setBackground(color)
+        list_widget.addItem(item)
+
+    def add_setting(self):
+        deck_name, ok = QtWidgets.QInputDialog.getText(self, 'Input Dialog', 'Enter deck name:')
+        if not ok:
+            return
+        if deck_name in self.decks:
+            QtWidgets.QMessageBox.warning(self, "Warning", "Deck name already exists")
+            self.setting_window.raise_()
+            self.setting_window.activateWindow()
+            return
+        deck = [[1, 1] for _ in range(15)]
+        self.decks[deck_name] = deck
+        self.setting.comboBox.addItem(deck_name)
+        self.setting_window.raise_()
+        self.setting_window.activateWindow()
+
+    def delete_setting(self):
+        current_deck = self.setting.comboBox.currentText()
+        if current_deck == 'default':
+            QtWidgets.QMessageBox.warning(self, "Warning", "Cannot delete default deck")
+            self.setting_window.raise_()
+            self.setting_window.activateWindow()
+            return
+        del self.decks[current_deck]
+        self.setting.comboBox.removeItem(self.setting.comboBox.currentIndex())
+        self.setting_window.raise_()
+        self.setting_window.activateWindow()
 
 
 if __name__ == '__main__':
